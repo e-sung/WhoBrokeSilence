@@ -8,32 +8,37 @@
 
 import SwiftUI
 
+class DragCircleViewModel: ObservableObject {
+    static var shared = DragCircleViewModel()
+    @Published var dragCircleRadius:CGFloat = 150
+}
+
 struct DraggableCircle: View {
-    let screenSize = UIScreen.main.bounds.size
-    var center: CGPoint {
+    private let screenSize = UIScreen.main.bounds.size
+    private var center: CGPoint {
         CGPoint(x: screenSize.width / 2, y: screenSize.height / 2)
     }
     let minimumRadius: CGFloat = 100
-    @State var radius: CGFloat
+    @ObservedObject var viewModel = DragCircleViewModel.shared
     var body: some View {
         Circle()
-            .foregroundColor(/*@START_MENU_TOKEN@*/.green/*@END_MENU_TOKEN@*/)
+            .stroke(lineWidth: 4)
             .gesture(DragGesture(coordinateSpace:.global).onChanged({ r in
                 let distance = r.location.distance(to: self.center)
                 if distance * 2 < self.minimumRadius {
-                    self.radius = self.minimumRadius
+                    self.viewModel.dragCircleRadius = self.minimumRadius
                 }
                 else {
-                    self.radius = 2 * distance
+                    self.viewModel.dragCircleRadius = 2 * distance
                 }
             }))
-            .frame(width: radius, height: radius, alignment: .center)
+            .frame(width: viewModel.dragCircleRadius, height: viewModel.dragCircleRadius, alignment: .center)
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        return DraggableCircle(radius: 150)
+        return DraggableCircle()
     }
 }
 

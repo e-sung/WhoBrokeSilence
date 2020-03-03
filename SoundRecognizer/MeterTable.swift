@@ -1,0 +1,58 @@
+//
+//  MeterTable.swift
+//  SDAudioEngine
+//
+//  Created by 류성두 on 2020/01/14.
+//  Copyright © 2020 Sungdoo. All rights reserved.
+//
+//  This Project is based on Apple Sample Project `AVEchoTouch` which can be found in
+//  https://developer.apple.com/documentation/avfoundation/audio_track_engineering/using_voice_processing
+import Foundation
+
+struct MeterTable {
+
+    // the decibel value of the minimum displayed amplitude
+    private let kMinDB: Float = -60.0
+
+    // The table needs to be large enough that there are no large gaps in the response
+    private let tableSize = 300
+    
+    private let scaleFactor: Float
+    private var meterTable = [Float]()
+    
+    init() {
+        let dbResolution = kMinDB / Float(tableSize - 1)
+        scaleFactor = 1.0 / dbResolution
+
+        // this controls the curvature of the response.
+        // 2.0 is square root, 3.0 is cube root.
+        let root: Float = 2.0
+
+        let rroot = 1.0 / root
+        let minAmp = dbToAmp(dBValue: kMinDB)
+        let ampRange = 1.0 - minAmp
+        let invAmpRange = 1.0 / ampRange
+        
+        for index in 0..<tableSize {
+            let decibels = Float(index) * dbResolution
+            let amp = dbToAmp(dBValue: decibels)
+            let adjAmp = (amp - minAmp) * invAmpRange
+            meterTable.append(powf(adjAmp, rroot))
+        }
+    }
+    
+    private func dbToAmp(dBValue: Float) -> Float {
+        return powf(10.0, 0.05 * dBValue)
+    }
+    
+    func valueForPower(_ power: Float) -> Float {
+        if power < kMinDB {
+            return 0.0
+        } else if power >= 0.0 {
+            return 1.0
+        } else {
+            let index = Int(power) * Int(scaleFactor)
+            return meterTable[index]
+        }
+    }
+}
