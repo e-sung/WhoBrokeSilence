@@ -16,7 +16,14 @@ class MainViewModel: ObservableObject {
     @Published var noiseCount:Int = 0
     @Published var noiseCircleRadius:CGFloat = 150
     @Published var dragCircleColor:Color = .green
+    @Published var noiseLevelString:String = ""
     var cancelBag:[Cancellable] = []
+    var noiseNumberFormatter:NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.maximumFractionDigits = 0
+        formatter.minimumFractionDigits = 0
+        return formatter
+    }()
     
     init() {
         soundRecognizer.audioLevelHandler = { level in
@@ -42,8 +49,16 @@ class MainViewModel: ObservableObject {
                 return .green
             }
         .assign(to: \.dragCircleColor, on: self)
-        
         cancelBag.append(circleRadiusToColorBinding)
+        
+        let soundLevelToString = $currentSoundLevel
+            .map { $0 * 100 }
+            .map { NSNumber(value: $0) }
+            .compactMap { self.noiseNumberFormatter.string(from: $0) }
+            .map({ $0 + "dB"})
+            .assign(to: \.noiseLevelString, on: self)
+
+        cancelBag.append(soundLevelToString)
 
     }
     
@@ -71,6 +86,7 @@ struct MainView: View {
                            alignment: .center)
                 .foregroundColor(.gray)
                 .animation(Animation.easeInOut)
+            Text(viewModel.noiseLevelString).font(Font.monospacedDigit(.headline)())
             
             self.dragCircle
                 .foregroundColor(self.viewModel.dragCircleColor)
