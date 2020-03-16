@@ -9,6 +9,7 @@
 import SwiftUI
 import SoundRecognizer
 import Combine
+import AVFoundation
 
 class MainViewModel: ObservableObject {
     let soundRecognizer = SoundeRecornizer()
@@ -17,6 +18,21 @@ class MainViewModel: ObservableObject {
     @Published var noiseCircleRadius:CGFloat = 150
     @Published var dragCircleColor:Color = .green
     @Published var noiseLevelString:String = ""
+    @Published var burstPerMinute:Int = 0
+    var backgroundColor: Color {
+        if noiseCircleRadius < DragCircleViewModel.shared.dragCircleRadius {
+            return .white
+        }
+        return .red
+    }
+    var textColor: Color {
+        if noiseCircleRadius < DragCircleViewModel.shared.dragCircleRadius {
+            return .black
+        }
+        return .white
+    }
+    lazy var speechSynthesizer = AVSpeechSynthesizer()
+    var threshHoldBPM = 20
     var cancelBag:[Cancellable] = []
     var noiseNumberFormatter:NumberFormatter = {
         let formatter = NumberFormatter()
@@ -36,7 +52,7 @@ class MainViewModel: ObservableObject {
         let soundLevelToCircleRadiusBinding =
             $currentSoundLevel
                 .map { CGFloat($0 )}
-                .map { $0 * UIScreen.main.bounds.width * 3}
+                .map { $0 * UIScreen.main.bounds.width * 1.5}
                 .assign(to: \.noiseCircleRadius, on: self)
         cancelBag.append(soundLevelToCircleRadiusBinding)
         
@@ -44,6 +60,7 @@ class MainViewModel: ObservableObject {
             .map { radius -> Color in
                 let draggableCircleRadius = DragCircleViewModel.shared.dragCircleRadius
                 if radius > draggableCircleRadius {
+                    self.burstPerMinute += 1
                     return .red
                 }
                 return .green
@@ -57,8 +74,25 @@ class MainViewModel: ObservableObject {
             .compactMap { self.noiseNumberFormatter.string(from: $0) }
             .map({ $0 + "dB"})
             .assign(to: \.noiseLevelString, on: self)
-
         cancelBag.append(soundLevelToString)
+        
+        let bpmResetTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true, block: { _ in
+            self.burstPerMinute = 0
+        })
+        bpmResetTimer.fire()
+        
+        let bpmToUtter = $burstPerMinute
+            .filter({ self.threshHoldBPM < $0 })
+            .debounce(for: 1, scheduler: RunLoop.main)
+            .sink(receiveValue: { _ in
+                self.burstPerMinute = 0
+                let utterance = AVSpeechUtterance(string: "저기이... 정말 죄송하지만... 좀 조용히 해주시겠어요?")
+                utterance.voice = AVSpeechSynthesisVoice(language:"ko-kr")
+                self.speechSynthesizer.speak(utterance)
+
+            })
+        
+        cancelBag.append(bpmToUtter)
 
     }
     
@@ -80,17 +114,28 @@ struct MainView: View {
     let dragCircle = DraggableCircle()
 
     var body: some View {
-        ZStack {
-            Circle().frame(width: self.viewModel.noiseCircleRadius,
-                           height: self.viewModel.noiseCircleRadius,
-                           alignment: .center)
-                .foregroundColor(.gray)
-                .animation(Animation.easeInOut)
-            Text(viewModel.noiseLevelString).font(Font.monospacedDigit(.headline)())
-            
-            self.dragCircle
-                .foregroundColor(self.viewModel.dragCircleColor)
-        }
+        HStack {
+            Spacer()
+            ZStack {
+                Circle().frame(width: self.viewModel.noiseCircleRadius,
+                               height: self.viewModel.noiseCircleRadius,
+                               alignment: .center)
+                    .foregroundColor(.gray)
+                    .animation(Animation.easeInOut)
+                Text(viewModel.noiseLevelString).font(Font.monospacedDigit(.headline)())
+                
+                self.dragCircle
+                    .foregroundColor(self.viewModel.dragCircleColor)
+                VStack {
+                    Spacer()
+                    Text("지난 1분동안 떠든 횟수 \(self.viewModel.burstPerMinute) 회")
+                        .font(Font.monospacedDigit(Font.body)())
+                        .foregroundColor(self.viewModel.textColor)
+                    Spacer().frame(height:40)
+                }
+            }
+            Spacer()
+        }.background(viewModel.backgroundColor)
     }
 }
 
