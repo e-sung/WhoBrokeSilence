@@ -51,7 +51,7 @@ class ParticleView: UIView {
         animator.addBehavior(collision)
         animator.addBehavior(elasticity)
         
-        let bindBPMtoParticle = viewModel.$burstPerMinute.sink { output in
+        let bindBPMtoParticle = viewModel.$burstPerMinute.sink { [unowned self] output in
             if self.viewModel.burstPerMinute > self.viewModel.threshHoldBPM {
                 self.reset()
             }
@@ -69,7 +69,9 @@ class ParticleView: UIView {
     }
 
     func reset() {
-        subviews.forEach { $0.removeFromSuperview() }
+        subviews.forEach {
+            fadeOut(particle: $0)
+        }
     }
     
     func popParticle() {
@@ -81,14 +83,34 @@ class ParticleView: UIView {
         collision.addItem(particle)
         elasticity.addItem(particle)
         positivecharge.addItem(particle)
-        
-        
+
         let push = UIPushBehavior(items: [particle], mode: .instantaneous)
         push.magnitude = 1.5
         push.angle = CGFloat.random(in: 0...2*CGFloat.pi)
         
         animator.addBehavior(push)
         lastPopedTime = Date()
+    }
+    
+    func fadeOut(particle: UIView) {
+        let scale = CABasicAnimation(keyPath: "transform.scale")
+        scale.fromValue = 1
+        scale.toValue = 2
+        scale.duration = 0.8
+        
+        let alpha = CABasicAnimation(keyPath: "opacity")
+        alpha.fromValue = 1
+        alpha.toValue = 0
+        alpha.duration = 0.8
+
+        CATransaction.begin()
+
+        CATransaction.setCompletionBlock {
+            particle.removeFromSuperview()
+        }
+        particle.layer.add(alpha, forKey: nil)
+        particle.layer.add(scale,forKey: nil)
+        CATransaction.commit()
     }
 
 }
