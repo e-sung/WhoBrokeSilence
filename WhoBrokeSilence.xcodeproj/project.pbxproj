@@ -13,6 +13,8 @@
 		114D5995240E7F9D00FC95E6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 114D5994240E7F9D00FC95E6 /* Assets.xcassets */; };
 		114D5998240E7F9D00FC95E6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 114D5997240E7F9D00FC95E6 /* Preview Assets.xcassets */; };
 		114D599B240E7F9D00FC95E6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 114D5999240E7F9D00FC95E6 /* LaunchScreen.storyboard */; };
+		1179A29124337A7200948CFF /* Wrapped.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1179A29024337A7200948CFF /* Wrapped.swift */; };
+		1179A29324337A9100948CFF /* ParticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1179A29224337A9100948CFF /* ParticleView.swift */; };
 		118227E9240E97F300506B06 /* SoundRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 118227E7240E97F300506B06 /* SoundRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		118227EC240E97F300506B06 /* SoundRecognizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 118227E5240E97F300506B06 /* SoundRecognizer.framework */; };
 		118227ED240E97F300506B06 /* SoundRecognizer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 118227E5240E97F300506B06 /* SoundRecognizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -55,6 +57,8 @@
 		114D5997240E7F9D00FC95E6 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		114D599A240E7F9D00FC95E6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		114D599C240E7F9D00FC95E6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1179A29024337A7200948CFF /* Wrapped.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wrapped.swift; sourceTree = "<group>"; };
+		1179A29224337A9100948CFF /* ParticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleView.swift; sourceTree = "<group>"; };
 		118227E5240E97F300506B06 /* SoundRecognizer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SoundRecognizer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		118227E7240E97F300506B06 /* SoundRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SoundRecognizer.h; sourceTree = "<group>"; };
 		118227E8240E97F300506B06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -108,6 +112,8 @@
 				114D5990240E7F9C00FC95E6 /* SceneDelegate.swift */,
 				114D5992240E7F9C00FC95E6 /* DraggableCircle.swift */,
 				118227F8240E98FF00506B06 /* MainView.swift */,
+				1179A29024337A7200948CFF /* Wrapped.swift */,
+				1179A29224337A9100948CFF /* ParticleView.swift */,
 				114D5994240E7F9D00FC95E6 /* Assets.xcassets */,
 				114D5999240E7F9D00FC95E6 /* LaunchScreen.storyboard */,
 				114D599C240E7F9D00FC95E6 /* Info.plist */,
@@ -251,8 +257,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				114D598F240E7F9C00FC95E6 /* AppDelegate.swift in Sources */,
+				1179A29124337A7200948CFF /* Wrapped.swift in Sources */,
 				118227F9240E98FF00506B06 /* MainView.swift in Sources */,
 				114D5991240E7F9C00FC95E6 /* SceneDelegate.swift in Sources */,
+				1179A29324337A9100948CFF /* ParticleView.swift in Sources */,
 				114D5993240E7F9C00FC95E6 /* DraggableCircle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

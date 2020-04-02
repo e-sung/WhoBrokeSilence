@@ -13,8 +13,8 @@ import AVFoundation
 
 class MainViewModel: ObservableObject {
     let soundRecognizer = SoundeRecornizer()
+    static var shared = MainViewModel()
     @Published var currentSoundLevel: Float = 0
-    @Published var noiseCount:Int = 0
     @Published var noiseCircleRadius:CGFloat = 150
     @Published var dragCircleColor:Color = .green
     @Published var noiseLevelString:String = ""
@@ -23,7 +23,7 @@ class MainViewModel: ObservableObject {
         if noiseCircleRadius < DragCircleViewModel.shared.dragCircleRadius {
             return .white
         }
-        return .red
+        return .white
     }
     var textColor: Color {
         if noiseCircleRadius < DragCircleViewModel.shared.dragCircleRadius {
@@ -98,7 +98,7 @@ class MainViewModel: ObservableObject {
     
     private func resetBsPerMinuteEveryMinute() {
         let timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true, block: { timer in
-            self.noiseCount = 0
+            self.burstPerMinute = 0
         })
         timer.fire()
     }
@@ -107,7 +107,7 @@ class MainViewModel: ObservableObject {
 
 
 struct MainView: View {
-    @ObservedObject var viewModel = MainViewModel()
+    @ObservedObject var viewModel = MainViewModel.shared
     @ObservedObject var dragCircleViewModel = DragCircleViewModel.shared
     let maxSize = UIScreen.main.bounds.size.width
     
@@ -117,6 +117,7 @@ struct MainView: View {
         HStack {
             Spacer()
             ZStack {
+                Wrap(ParticleView())
                 Circle().frame(width: self.viewModel.noiseCircleRadius,
                                height: self.viewModel.noiseCircleRadius,
                                alignment: .center)
